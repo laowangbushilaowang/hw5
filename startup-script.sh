@@ -25,9 +25,12 @@ pip3 install Flask
 pip3 install google-cloud-pubsub
 pip3 install google-cloud-storage
 pip3 install google-cloud-logging
-git clone https://github.com/laowangbushilaowang/hw4.git
-cd hw4
-# python3 app.py
+pip3 install pymysql
+pip3 install sqlalchemy
+pip3 install "cloud-sql-python-connector[pymysql]"
+git clone https://github.com/laowangbushilaowang/hw5.git
+cd hw5
+python3 app.py
 # Fetch source code
 # export HOME=/root
 # git clone https://github.com/GoogleCloudPlatform/getting-started-python.git /opt/app

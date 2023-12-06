@@ -1,0 +1,71 @@
+resources:
+  - name: my-cloud-sql-instance
+    type: sqladmin.v1.instance
+    properties:
+      region: us-central1
+      databaseVersion: MYSQL_8_0 # 或者 MYSQL_8_0
+      settings:
+        tier: db-n1-standard-1 # 或根据需要选择其他机器类型
+        backupConfiguration:
+          binaryLogEnabled: true
+          enabled: true
+          startTime: "05:00"
+        ipConfiguration:
+          authorizedNetworks: []
+        dataDiskSizeGb: 10 # 根据需要指定磁盘大小
+        dataDiskType: PD_SSD # 或者 PD_HDD
+      rootPassword: [1q2w3e]
+  - name: web
+    type: compute.v1.instance
+    properties:
+      zone: us-central1-a
+      machineType: zones/us-central1-a/machineTypes/e2-small
+      disks:
+        - deviceName: instance-3
+          type: PERSISTENT
+          boot: true
+          autoDelete: true
+          initializeParams:
+            diskName: instance-3-disk
+            diskType: zones/us-central1-a/diskTypes/pd-balanced
+            diskSizeGb: 10
+            sourceImage: projects/debian-cloud/global/images/debian-11-bullseye-v20231010
+      networkInterfaces:
+        - network: projects/wbh-project-398814/global/networks/default
+          accessConfigs:
+            - name: External NAT
+              type: ONE_TO_ONE_NAT
+      serviceAccounts:
+        - email: 448914793109-compute@developer.gserviceaccount.com
+          scopes:
+            - https://www.googleapis.com/auth/cloud-platform
+      tags:
+        items:
+          - http-server
+      metadata:
+        items:
+          - key: startup-script
+            value: |
+              set -ev
+              sudo apt-get update
+              sudo apt-get install -yq python3-pip python3-distutils git
+              pip3 install Flask
+              pip3 install google-cloud-pubsub
+              pip3 install google-cloud-storage
+              pip3 install google-cloud-logging
+              pip3 install pymysql
+              pip3 install sqlalchemy
+              pip3 install "cloud-sql-python-connector[pymysql]"
+              git clone https://github.com/laowangbushilaowang/hw5.git
+              cd hw5
+              python3 app.py
+      labels:
+        goog-ec-src: "vm_add-gcloud"
+      scheduling:
+        preemptible: false
+        onHostMaintenance: MIGRATE
+        automaticRestart: true
+      shieldedVmConfig:
+        enableSecureBoot: false
+        enableVtpm: true
+        enableIntegrityMonitoring: true
