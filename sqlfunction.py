@@ -45,7 +45,7 @@ list_of_incomes = ['0-10k', '10k-20k', '20k-40k', '40k-60k', '60k-100k', '100k-1
 # initialize parameters
 INSTANCE_CONNECTION_NAME = f"wbh-project-398814:us-central1:hw5" # i.e demo-project:us-central1:demo-instance
 print(f"Your instance connection name is: {INSTANCE_CONNECTION_NAME}")
-DB_USER = "chef"
+DB_USER = "root"
 DB_PASS = "1q2w3e"
 DB_NAME = "dbhw5"
 
@@ -62,7 +62,6 @@ def getconn():
         "pymysql",
         user=DB_USER,
         password=DB_PASS,
-        db=DB_NAME
     )
     return conn
 
@@ -71,6 +70,9 @@ pool = sqlalchemy.create_engine(
     "mysql+pymysql://",
     creator=getconn,
 )
+with pool.connect() as conn:
+    conn.execute(sqlalchemy.text(f"CREATE DATABASE IF NOT EXISTS {DB_NAME};"))
+    conn.execute(sqlalchemy.text(f"USE {DB_NAME};"))
 # connect to connection pool
 with pool.connect() as db_conn:
   # create ratings table in our sandwiches database
